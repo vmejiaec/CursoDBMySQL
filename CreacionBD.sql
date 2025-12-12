@@ -1,6 +1,7 @@
 -- Creación de la base de datos del sistema SaludTotal
 --
--- Creación de la base de datos
+-- Creación de la base de datos  
+drop database saludtotal;
 create database SaludTotal;
 -- Confirmar la creación de la nueva base
 show databases;
@@ -47,13 +48,29 @@ create table clientes(
     tipo char(3), -- NAT persona natural , JUR persona jurídica
     fechanacimiento date
 );
+use saludtotal;
+alter table clientes
+add column email varchar(20);
+alter table clientes
+add column telefono varchar(14);
+alter table clientes
+add column direccion varchar(100);
 
+desc clientes;
+delete from clientes;
 insert into clientes
-values('1800000000', 'Juanito', 'NAT','2000-01-01');
+values('1800000000', 'Juanito', 'NAT','2000-01-01', 
+'juan34@daf.com','0998987687', 'Amazonas E34-S3');
 insert into clientes
-values('1800000001', 'María', 'NAT','2003-01-01');
+values('1800000001', 'María', 'NAT','2003-01-01', 
+'mariaec@daf.com','099898333', 'Carrión E34-S3');
 insert into clientes
-values('1800000002', 'Marco', 'NAT','2005-01-01');
+values('1800000002', 'Marco', 'NAT','2005-01-01', 
+'marcoggg@daf.com','0998987111', 'Av. 10 de Agosto E34-S3');
+
+update clientes
+set email='juan34@er.com'
+where cedula = '1800000000';
 
 select * from clientes;
 
@@ -97,4 +114,55 @@ values (
 use saludtotal;
 select * from medicinafrecuente;
 
-delete from medicinafrecuente;
+use saludtotal;
+-- Creación de la tabla datos de la empresa
+create table empresa(
+   ruc char(13),
+   razonsocial varchar(100),
+   direccion varchar(100),
+   telefono varchar(14),
+   email VARCHAR(25)
+);
+
+insert into empresa values('1712312345001', 'Salud Total S.A.', 'Av. 10 de Agosto S/N','099123456788','sanatotal@sana.com');
+
+select * from empresa;
+
+-- Creación de las tablas de facturas y factrurasdetalle
+
+create table facturas(
+   facturanumero char(10) primary key,
+   fecha date,
+   cedula char(10),
+   total decimal(15,2)
+);
+
+alter table facturas
+add constraint facturascedula_fk
+foreign key (cedula)
+references clientes(cedula);
+
+insert into facturas values(
+   '0000000001','2025-12-12','1800000001', 5.25
+);
+
+create table facturadetalle(
+   facturanumero char(19),
+   medicamento_id int,
+   cantidad int,
+   precio decimal(15,2)
+);
+
+alter table facturadetalle
+add constraint facturadetalle_cantidad_ck
+check (cantidad > 0);
+
+alter table facturadetalle
+add primary key (facturanumero, medicamento_id);
+
+insert into facturadetalle values(
+   '0000000001', 3, 12, 2.75
+);
+insert into facturadetalle values(
+   '0000000001', 1, 5, 0.75
+);
