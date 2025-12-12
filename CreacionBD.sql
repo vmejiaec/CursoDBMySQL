@@ -1,5 +1,5 @@
 -- Creación de la base de datos del sistema SaludTotal
---
+-- COmentario
 -- Creación de la base de datos  
 drop database saludtotal;
 create database SaludTotal;
