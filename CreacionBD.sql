@@ -166,3 +166,5 @@ insert into facturadetalle values(
 insert into facturadetalle values(
    '0000000001', 1, 5, 0.75
 );
+ 
+ -- Crear proveedores de medicinas
