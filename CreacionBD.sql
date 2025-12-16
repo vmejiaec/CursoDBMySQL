@@ -168,3 +168,4 @@ insert into facturadetalle values(
 );
  
  -- Crear proveedores de medicinas
+ --
