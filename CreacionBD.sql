@@ -17,6 +17,39 @@ create table medicinas
     stock int, 
     fechacaducidad datetime
 );
+use saludtotal;
+alter table medicinas
+modify column tipo char(3) default 'GEN';
+
+alter table medicinas
+modify column nombre varchar(100)  not null;
+
+alter table medicinas
+add constraint medicinas_tipo_val
+check (
+   tipo in ('GEN', 'COM')
+);
+
+update medicinas
+set tipo ='GEN'
+where id = 12;
+
+alter table medicinas
+add constraint medicinas_nombre_uq
+unique (nombre);
+
+insert into medicinas
+(id, nombre, precio, stock, fechacaducidad)
+values (15,'Terminafina', 3.43,12,'2028-01-01 00:00:00');
+use saludtotal;
+insert into medicinas
+(id, nombre, tipo, precio, stock, fechacaducidad)
+values (17,'Acetaminofen PLU', 'GEN',3.43,12,'2028-01-01 00:00:00');
+
+delete from medicinas
+where id = 16;
+
+select * from medicinas;
 
 show tables;
 desc medicinas;
@@ -48,11 +81,12 @@ create table clientes(
     tipo char(3), -- NAT persona natural , JUR persona jurídica
     fechanacimiento date
 );
+
 use saludtotal;
 alter table clientes
-add column email varchar(20);
+MODIFY column email varchar(100);
 alter table clientes
-add column telefono varchar(14);
+MODIFY column telefono varchar(50);
 alter table clientes
 add column direccion varchar(100);
 
@@ -73,6 +107,12 @@ set email='juan34@er.com'
 where cedula = '1800000000';
 
 select * from clientes;
+use 
+ saludtotal;
+-- Atributo email único en la tabla clientes
+alter table clientes
+add constraint cliente_email_uq
+unique (email);
 
 use saludtotal;
 -- Creación de la tabla para medicina frecuente
