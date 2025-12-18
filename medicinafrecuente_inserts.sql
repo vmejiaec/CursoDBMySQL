@@ -1,0 +1,55 @@
+-- Inserts para 50 registros en medicinafrecuente
+-- Casos variados, incluyendo pacientes con múltiples condiciones
+
+use saludtotal;
+
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000011', 86, 'Asma bronquial', 'CRI', 13.16);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000011', 87, 'Dolor crónico e inflamación', 'SEM', 5.57);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000006', 96, 'Infección bacteriana recurrente', 'MEN', 6.54);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000006', 101, 'Dolor crónico e inflamación', 'CRI', 5.00);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000012', 77, 'Diabetes tipo 2', 'MEN', 24.88);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000012', 41, 'Hipertensión arterial', 'MEN', 14.38);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000015', 32, 'Infección bacteriana recurrente', 'MEN', 6.52);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000015', 60, 'Hipertensión arterial', 'MEN', 11.52);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000032', 47, 'Reflujo gastroesofágico', 'MEN', 17.87);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000032', 29, 'Dolor crónico e inflamación', 'CRI', 10.96);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000009', 47, 'Reflujo gastroesofágico', 'MEN', 12.99);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000009', 64, 'Cardiopatía isquémica', 'MEN', 12.67);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000026', 24, 'Reflujo gastroesofágico', 'MEN', 9.34);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000026', 55, 'Alergia estacional', 'SEM', 13.77);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000017', 47, 'Reflujo gastroesofágico', 'MEN', 11.60);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000017', 113, 'Hipertensión arterial', 'MEN', 16.62);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000039', 113, 'Hipertensión arterial', 'MEN', 16.08);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000039', 54, 'Diabetes tipo 2', 'SEM', 17.21);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000024', 32, 'Infección bacteriana recurrente', 'MEN', 16.57);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000024', 61, 'Asma bronquial', 'SEM', 15.91);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000002', 77, 'Diabetes tipo 2', 'SEM', 20.11);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000002', 86, 'Asma bronquial', 'SEM', 5.12);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000035', 32, 'Infección bacteriana recurrente', 'MEN', 6.99);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000035', 77, 'Diabetes tipo 2', 'MEN', 19.63);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000019', 77, 'Diabetes tipo 2', 'MEN', 18.77);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000046', 69, 'Alergia estacional', 'MEN', 8.61);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000003', 29, 'Dolor crónico e inflamación', 'SEM', 17.14);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000001', 113, 'Hipertensión arterial', 'MEN', 16.64);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000044', 86, 'Asma bronquial', 'SEM', 8.33);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000028', 60, 'Hipertensión arterial', 'MEN', 7.58);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000041', 47, 'Reflujo gastroesofágico', 'MEN', 13.68);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000014', 24, 'Reflujo gastroesofágico', 'MEN', 5.34);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000034', 89, 'Reflujo gastroesofágico', 'MEN', 14.11);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000013', 47, 'Reflujo gastroesofágico', 'MEN', 8.84);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000045', 20, 'Cardiopatía isquémica', 'MEN', 12.60);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000016', 89, 'Reflujo gastroesofágico', 'MEN', 8.70);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000023', 87, 'Dolor crónico e inflamación', 'SEM', 15.80);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000050', 61, 'Asma bronquial', 'CRI', 12.87);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000047', 89, 'Reflujo gastroesofágico', 'MEN', 7.79);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000025', 24, 'Reflujo gastroesofágico', 'MEN', 15.62);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000031', 42, 'Cardiopatía isquémica', 'MEN', 6.24);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000021', 47, 'Reflujo gastroesofágico', 'MEN', 11.17);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000037', 86, 'Asma bronquial', 'SEM', 5.17);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000005', 112, 'Cardiopatía isquémica', 'MEN', 5.61);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000029', 42, 'Cardiopatía isquémica', 'MEN', 12.28);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000040', 47, 'Reflujo gastroesofágico', 'MEN', 13.78);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000038', 97, 'Cardiopatía isquémica', 'MEN', 12.93);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000033', 54, 'Diabetes tipo 2', 'MEN', 24.04);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000010', 86, 'Asma bronquial', 'CRI', 7.75);
+INSERT INTO medicinafrecuente (cliente_cedula, medicina_id, condicion, frecuencia, descuento) VALUES ('1000000049', 61, 'Asma bronquial', 'CRI', 7.27);

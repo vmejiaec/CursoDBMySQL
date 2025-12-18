@@ -122,7 +122,7 @@ create table medicinafrecuente
    medicina_id int,
    condicion varchar(100),
    frecuencia char(3), -- SEM - semanal , MEN - mensual, CRI - Crisis
-   descuento decimal(5,2)  -- 123,45
+   descuento decimal(5,2)  
 );
 -- Añadir la validación de clave foranea a la cedula del cliente
 alter table medicinafrecuente
@@ -209,3 +209,25 @@ insert into facturadetalle values(
  
  -- Crear proveedores de medicinas
  --
+
+ use saludtotal;
+ show tables;
+
+ -- Caso: Relación entre medicinas genericas y medicinas comerciales
+ create table medicinacomercialgenerica
+ (
+   medicinacomercial_id int,
+   medicinagenerica_id int
+ );
+ alter table medicinacomercialgenerica
+ add primary key (medicinacomercial_id ,   medicinagenerica_id );
+ alter table medicinacomercialgenerica
+ add constraint medicinacomercialgenerica_medicinacomercial_id_fk
+ foreign key (medicinacomercial_id)
+ references medicinas(id);
+
+  alter table medicinacomercialgenerica
+ add constraint medicinacomercialgenerica_medicinagenerica_id_fk
+ foreign key (medicinagenerica_id)
+ references medicinas(id);
+
