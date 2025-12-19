@@ -1,0 +1,87 @@
+10 ejercicios adicionales de consultas SQL (SaludTotal) – MySQL 8.0
+Temas: subconsultas avanzadas, EXISTS/NOT EXISTS, ANY/ALL, REGEXP, CTEs, pivote simple con CASE, anti-join, derivadas y window functions.
+
+1) Clientes que no tienen registros en medicinafrecuente (anti-join con NOT EXISTS).
+SQL:
+SELECT c.cedula, c.nombre
+FROM clientes c
+WHERE NOT EXISTS (
+  SELECT 1 FROM medicinafrecuente mf
+  WHERE mf.cliente_cedula = c.cedula
+);
+
+2) Medicinas cuyo precio es mayor que el de cualquier medicina genérica (usar ALL).
+SQL:
+SELECT id, nombre, precio
+FROM medicinas
+WHERE precio > ALL (SELECT precio FROM medicinas WHERE tipo = 'GEN');
+
+3) Medicinas cuyo nombre parece contener abreviaturas (uso de REGEXP).
+SQL:
+SELECT id, nombre
+FROM medicinas
+WHERE nombre REGEXP '[A-Z]{2,}';
+
+4) CTE que calcula el total por factura y luego lista las facturas cuyo total > 20.
+SQL:
+WITH totales AS (
+  SELECT f.facturanumero, SUM(fd.cantidad * fd.precio) AS total
+  FROM facturas f
+  JOIN facturadetalle fd ON fd.facturanumero = f.facturanumero
+  GROUP BY f.facturanumero
+)
+SELECT facturanumero, total
+FROM totales
+WHERE total > 20
+ORDER BY total DESC;
+
+5) Conteo de frecuencias SEM/DIA/MEN/QUI por cliente (pivot simple con CASE).
+SQL:
+SELECT mf.cliente_cedula,
+       SUM(CASE WHEN frecuencia = 'SEM' THEN 1 ELSE 0 END) AS semanales,
+       SUM(CASE WHEN frecuencia = 'DIA' THEN 1 ELSE 0 END) AS diarias,
+       SUM(CASE WHEN frecuencia = 'MEN' THEN 1 ELSE 0 END) AS mensuales,
+       SUM(CASE WHEN frecuencia = 'QUI' THEN 1 ELSE 0 END) AS quincenales
+FROM medicinafrecuente mf
+GROUP BY mf.cliente_cedula;
+
+6) Usar una tabla derivada para obtener las 3 medicinas más caras por tipo y mostrarlas con su tipo.
+SQL:
+SELECT t.tipo, t.id, t.nombre, t.precio
+FROM (
+  SELECT m.*,
+         ROW_NUMBER() OVER (PARTITION BY m.tipo ORDER BY m.precio DESC) AS rn
+  FROM medicinas m
+) AS t
+WHERE t.rn <= 3
+ORDER BY t.tipo, t.precio DESC;
+
+7) Para cada cliente, contar cuántas medicinas frecuentes tiene (subconsulta correlacionada).
+SQL:
+SELECT c.cedula, c.nombre,
+       (SELECT COUNT(*) FROM medicinafrecuente mf WHERE mf.cliente_cedula = c.cedula) AS num_medicinas_frecuentes
+FROM clientes c
+ORDER BY num_medicinas_frecuentes DESC;
+
+8) Medicinas que aparecen en facturas (por nombre), con veces vendidas y unidades totales.
+SQL:
+SELECT m.id, m.nombre, COUNT(*) AS veces_vendida, SUM(fd.cantidad) AS unidades
+FROM facturadetalle fd
+JOIN medicinas m ON m.id = fd.medicamento_id
+GROUP BY m.id, m.nombre
+HAVING SUM(fd.cantidad) > 0
+ORDER BY unidades DESC;
+
+9) Medicinas cuyo precio está por encima de algún precio comercial (usar ANY).
+SQL:
+SELECT id, nombre, precio
+FROM medicinas
+WHERE precio > ANY (SELECT precio FROM medicinas WHERE tipo = 'COM');
+
+10) Promedio móvil de precio por 3 filas (función de ventana).
+SQL:
+SELECT id, nombre, precio,
+       ROUND(AVG(precio) OVER (ORDER BY id ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING), 2) AS promedio_movil
+FROM medicinas
+ORDER BY id;
+

@@ -118,3 +118,70 @@ where descuento < (
 --       sus correspondientes medicinas genéricas.
 --       Elaborar un listado que compare el precio de la medicina comercial
 --       con su equivalente genérico
+
+-- Caso: Crear todas las combinaciones posibles entre la tabla
+--       de clientes y la tabla de medicinafrecuente.
+--       Producto Carteciano
+
+use saludtotal;
+select *
+from 
+   clientes,
+   medicinafrecuente
+where 
+   clientes.cedula = medicinafrecuente.cliente_cedula;
+
+select 
+   c.cedula,
+   c.nombre,
+   m.nombre,
+   mf.descuento,
+   m.tipo
+from
+   clientes c,
+   medicinas m,
+   medicinafrecuente mf
+where 
+      m.id = mf.medicina_id 
+  and c.cedula = mf.cliente_cedula
+  and m.tipo = 'COM';
+use saludtotal;
+select 
+   c.cedula,
+   c.nombre,
+   m.nombre,
+   mf.descuento,
+   m.tipo
+from
+   medicinafrecuente mf
+join clientes c on c.cedula = mf.cliente_cedula
+join medicinas m on m.id = mf.medicina_id 
+where 
+   m.tipo = 'COM';
+use saludtotal;
+select 
+  mcom.id,
+  mcom.nombre,
+  mcom.precio,
+  mcg.medicinagenerica_id,
+  mgen.nombre,
+  mgen.precio,
+  mcom.precio - mgen.precio as diferencia
+from
+  medicinacomercialgenerica mcg
+join medicinas mcom on mcom.id = mcg.medicinacomercial_id
+join medicinas mgen on mgen.id = mcg.medicinagenerica_id
+;
+
+-- Caso: Presentar una factura y sus detalles, que incluya,
+--      Los datos de la farmacia: nombre, ruc, ...
+--      Los del cliente: ...
+--      Los datos de la cabecera de la factura: numero, fecha
+--      Las medicinas vendidas: nombre medicina, id, cant, precio, subtotal
+--      Los datos al pie de la factura: Total y la forma de pago
+
+-- 1. Carga de datos en facturas cabecera y detalles
+--    usar los datos ya existenes
+-- 2. Select para cabera de factura 
+-- 3. Select para los detalles de  factura
+-- 4. Select para el pie factura. 

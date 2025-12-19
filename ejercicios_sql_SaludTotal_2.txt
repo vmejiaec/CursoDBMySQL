@@ -1,0 +1,101 @@
+Otros 10 ejercicios de consultas SQL (SaludTotal) – Enfoque MySQL 8.0
+Incluye temas adicionales: CTEs, funciones de ventana, CASE, HAVING, UNION, vistas, índices, transacciones, funciones de fecha y cadenas.
+
+1) CTE para filtrar medicinas próximas a caducar (<= 6 meses) y con stock bajo (< 20).
+SQL:
+WITH proximas AS (
+  SELECT id, nombre, stock, fechacaducidad
+  FROM medicinas
+  WHERE fechacaducidad BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH)
+)
+SELECT *
+FROM proximas
+WHERE stock < 20;
+
+2) Función de ventana: ranking de medicinas por precio dentro de cada tipo (GEN/COM).
+SQL:
+SELECT id, nombre, tipo, precio,
+       RANK() OVER (PARTITION BY tipo ORDER BY precio DESC) AS rank_por_tipo
+FROM medicinas;
+
+3) Uso de CASE para clasificar precios y calcular un precio con descuento si el stock > 40.
+SQL:
+SELECT id, nombre, precio, stock,
+       CASE
+         WHEN precio < 1 THEN 'BAJO'
+         WHEN precio BETWEEN 1 AND 5 THEN 'MEDIO'
+         ELSE 'ALTO'
+       END AS rango_precio,
+       ROUND(CASE WHEN stock > 40 THEN precio * 0.95 ELSE precio END, 2) AS precio_evento
+FROM medicinas;
+
+4) Clientes con más de 1 factura y total recalculado > 10 (JOIN + GROUP BY + HAVING).
+SQL:
+SELECT c.cedula, c.nombre, COUNT(DISTINCT f.facturanumero) AS num_facturas,
+       SUM(fd.cantidad * fd.precio) AS total_recalculado
+FROM clientes c
+JOIN facturas f ON f.cedula = c.cedula
+JOIN facturadetalle fd ON fd.facturanumero = f.facturanumero
+GROUP BY c.cedula, c.nombre
+HAVING COUNT(DISTINCT f.facturanumero) > 1 AND SUM(fd.cantidad * fd.precio) > 10;
+
+5) UNION de nombres de medicinas y dolencias para un catálogo único de términos.
+SQL:
+SELECT nombre AS termino, 'MEDICINA' AS origen FROM medicinas
+UNION
+SELECT DISTINCT condicion AS termino, 'DOLENCIA' AS origen FROM medicinafrecuente
+ORDER BY termino;
+
+6) Crear una VISTA con el detalle extendido de facturas (cliente, líneas y totales).
+SQL:
+CREATE OR REPLACE VIEW v_facturas_detalle AS
+SELECT f.facturanumero, f.fecha, c.cedula, c.nombre AS cliente,
+       fd.medicamento_id, m.nombre AS medicina, fd.cantidad, fd.precio,
+       (fd.cantidad * fd.precio) AS subtotal
+FROM facturas f
+JOIN clientes c ON c.cedula = f.cedula
+JOIN facturadetalle fd ON fd.facturanumero = f.facturanumero
+JOIN medicinas m ON m.id = fd.medicamento_id;
+
+-- Consulta de la vista con total de factura
+SELECT facturanumero, cliente, SUM(subtotal) AS total
+FROM v_facturas_detalle
+GROUP BY facturanumero, cliente;
+
+7) Crear índices para acelerar búsquedas por tipo de medicina y facturas por cliente.
+SQL:
+CREATE INDEX idx_medicinas_tipo ON medicinas(tipo);
+CREATE INDEX idx_facturas_cedula ON facturas(cedula);
+
+-- Ejemplo de consulta beneficiada por idx_medicinas_tipo
+SELECT id, nombre FROM medicinas WHERE tipo = 'GEN';
+
+8) Transacción: registrar una factura y sus detalles; rollback si algo falla.
+SQL:
+START TRANSACTION;
+INSERT INTO facturas (facturanumero, fecha, cedula, total)
+VALUES ('0000000002', CURDATE(), '1800000001', 0.00);
+INSERT INTO facturadetalle (facturanumero, medicamento_id, cantidad, precio)
+VALUES ('0000000002', 1, 2, 1.50);
+INSERT INTO facturadetalle (facturanumero, medicamento_id, cantidad, precio)
+VALUES ('0000000002', 2, 1, 0.56);
+-- Actualizar total con subconsulta
+UPDATE facturas f
+SET total = (SELECT SUM(d.cantidad * d.precio) FROM facturadetalle d WHERE d.facturanumero = '0000000002')
+WHERE f.facturanumero = '0000000002';
+COMMIT;
+
+-- Si ocurre un error, usar ROLLBACK;
+
+9) Normalizar nombre de medicina a mayúsculas y extraer año de caducidad.
+SQL:
+SELECT id, UPPER(nombre) AS nombre_mayus, YEAR(fechacaducidad) AS anio_caducidad
+FROM medicinas
+WHERE YEAR(fechacaducidad) >= YEAR(CURDATE());
+
+10) Acumulado de subtotales por factura ordenado por medicamento (función de ventana).
+SQL:
+SELECT facturanumero, medicamento_id, cantidad, precio, (cantidad * precio) AS subtotal,
+       SUM(cantidad * precio) OVER (PARTITION BY facturanumero ORDER BY medicamento_id) AS acumulado
+FROM facturadetalle;
+

@@ -1,0 +1,84 @@
+Lista de 10 ejercicios de consultas SQL (SaludTotal)
+Nota: Las consultas usan las tablas y columnas definidas en el script de creación de la BD adjunto.
+
+1) Medicinas genéricas más caras que el promedio de todas las genéricas (subconsulta). citeturn4search1
+SQL:
+SELECT id, nombre, precio
+FROM medicinas
+WHERE tipo = 'GEN'
+  AND precio > (SELECT AVG(precio) FROM medicinas WHERE tipo = 'GEN');
+
+2) Clientes que tienen registros en medicinafrecuente, con la medicina y su tipo (JOIN). citeturn4search1
+SQL:
+SELECT c.cedula, c.nombre AS cliente, m.id AS medicina_id, m.nombre AS medicina, m.tipo
+FROM medicinafrecuente mf
+JOIN clientes c ON c.cedula = mf.cliente_cedula
+JOIN medicinas m ON m.id = mf.medicina_id;
+
+3) Facturas con el total recalculado como suma de (cantidad * precio) del detalle (subconsulta correlacionada). citeturn4search1
+SQL:
+SELECT f.facturanumero, f.fecha, f.cedula,
+       (SELECT SUM(d.cantidad * d.precio)
+        FROM facturadetalle d
+        WHERE d.facturanumero = f.facturanumero) AS total_calculado
+FROM facturas f;
+
+4) Medicinas comerciales que están relacionadas con al menos una genérica (JOIN + EXISTS). citeturn4search1
+SQL:
+SELECT DISTINCT mcg.medicinacomercial_id AS id_comercial, m.nombre
+FROM medicinacomercialgenerica mcg
+JOIN medicinas m ON m.id = mcg.medicinacomercial_id
+WHERE m.tipo = 'COM'
+  AND EXISTS (SELECT 1
+              FROM medicinas mg
+              WHERE mg.id = mcg.medicinagenerica_id
+                AND mg.tipo = 'GEN');
+
+5) Top 5 clientes con mayor total facturado, usando JOIN y agregación (JOIN + GROUP BY). citeturn4search1
+SQL:
+SELECT c.cedula, c.nombre, SUM(fd.cantidad * fd.precio) AS total_facturado
+FROM facturas f
+JOIN clientes c ON c.cedula = f.cedula
+JOIN facturadetalle fd ON fd.facturanumero = f.facturanumero
+GROUP BY c.cedula, c.nombre
+ORDER BY total_facturado DESC
+LIMIT 5;
+
+6) Medicinas que vencen dentro de los próximos 12 meses respecto a una fecha de referencia (subconsulta con fecha). citeturn4search1
+SQL:
+SELECT id, nombre, fechacaducidad
+FROM medicinas
+WHERE fechacaducidad BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 12 MONTH);
+
+7) Clientes sin compras (no tienen facturas) usando subconsulta NOT IN. citeturn4search1
+SQL:
+SELECT c.cedula, c.nombre
+FROM clientes c
+WHERE c.cedula NOT IN (SELECT DISTINCT f.cedula FROM facturas f);
+
+8) Dolencias más frecuentes por tipo de frecuencia en medicinafrecuente (JOIN opcional + GROUP BY). citeturn4search1
+SQL:
+SELECT frecuencia, condicion, COUNT(*) AS casos
+FROM medicinafrecuente
+GROUP BY frecuencia, condicion
+ORDER BY frecuencia, casos DESC;
+
+9) Medicinas cuyo precio es superior al promedio de su mismo tipo (subconsulta por grupo). citeturn4search1
+SQL:
+SELECT m.id, m.nombre, m.tipo, m.precio
+FROM medicinas m
+WHERE m.precio > (SELECT AVG(m2.precio)
+                  FROM medicinas m2
+                  WHERE m2.tipo = m.tipo);
+
+10) Facturas con detalle: listar cada línea con el nombre de la medicina (JOIN múltiple) y el total de la factura como subconsulta. citeturn4search1
+SQL:
+SELECT f.facturanumero, f.fecha, c.nombre AS cliente, m.nombre AS medicina,
+       fd.cantidad, fd.precio, (fd.cantidad * fd.precio) AS subtotal,
+       (SELECT SUM(d.cantidad * d.precio) FROM facturadetalle d WHERE d.facturanumero = f.facturanumero) AS total_factura
+FROM facturas f
+JOIN clientes c ON c.cedula = f.cedula
+JOIN facturadetalle fd ON fd.facturanumero = f.facturanumero
+JOIN medicinas m ON m.id = fd.medicamento_id
+ORDER BY f.facturanumero, m.nombre;
+
