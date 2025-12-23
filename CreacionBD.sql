@@ -200,6 +200,17 @@ check (cantidad > 0);
 alter table facturadetalle
 add primary key (facturanumero, medicamento_id);
 
+use saludtotal;
+alter table facturadetalle
+ADD constraint facturadetalle_facturanumero_fk
+foreign key (facturanumero)
+references facturas(facturanumero);
+
+alter table facturadetalle
+ADD constraint facturadetalle_medicina_id_fk
+foreign key (medicamento_id)
+references medicinas(id);
+
 insert into facturadetalle values(
    '0000000001', 3, 12, 2.75
 );
