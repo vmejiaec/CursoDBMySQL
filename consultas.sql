@@ -448,3 +448,207 @@ ORDER BY
  facturatotal desc
 limit 1;
 
+-- Caso: Proyección de la venta total del stock, tomando en cuenta
+--       el descuento para las medicinas del plan de medicina frecuente
+
+SELECT
+  sum(precio * stock)
+from medicinas;
+
+create view v_proyeccion_ventas
+as
+select   -- Medicinas con descuento del plan
+  mf.medicina_id,
+  m.nombre,
+  m.precio,
+  m.stock,
+  mf.descuento,  -- Descuento del plan
+  m.precio * (1-mf.descuento/100) as nuevo_precio
+from medicinafrecuente mf
+join medicinas m on m.id = mf.medicina_id
+UNION
+select   -- Medicinas sin descuento no están en el plan
+  mf.medicina_id,
+  m.nombre,
+  m.precio,
+  m.stock,
+  0.0 as descuento,  -- Sin descuento es descuento cero
+  m.precio as nuevo_precio -- El precio final es igual al precio
+from medicinafrecuente mf
+right join medicinas m on m.id = mf.medicina_id
+where mf.descuento is null
+;
+
+select
+  sum(nuevo_precio * stock)
+from
+  v_proyeccion_ventas;
+
+-- Caso: Averiguar qué medicinas vencen en el proximo mes.
+select 
+  id,
+  nombre,
+  fechacaducidad
+from
+  medicinas
+where 
+   fechacaducidad >= date_add(last_day( curdate()),interval 1 day)
+   and  fechacaducidad <= 
+              last_day(date_add (curdate(), INTERVAL 1 MONTH) )
+order by
+   fechacaducidad;
+
+
+-- Caso: Cronograma de vencimiento de medicinas a tres meses vista
+
+
+-- Caso: Kardex de la farmacia
+--       De una medicina, quiero los movimientos de entrada y salida
+--         - Stock inicial por período
+--         - Compras, Alta por inventario, Donaciones, etc.
+--         - Ventas, Bajas por inventario, Vencimiento, etc.
+--       Resultado: stock final.
+--       Método para valorar: PROMEDIO, FIFO y LIFO
+
+use saludtotal;
+drop view v_mov_ventas;
+create view v_mov_ventas
+as
+select 
+  f.fecha,
+  fd.medicamento_id,
+  m.nombre as medicina,
+  f.facturanumero as documento,
+  'Venta' as tipo_mov,
+  sum(fd.cantidad)
+     over (partition by fd.medicamento_id order by f.fecha) as acumulado,
+  m.stock,
+  fd.cantidad
+from facturadetalle fd
+join facturas f on f.facturanumero = fd.facturanumero
+join medicinas m on m.id = fd.medicamento_id 
+order BY
+  f.fecha;
+
+SELECT
+  fecha,
+  documento,
+  tipo_mov,
+  stock,
+  cantidad,
+  acumulado,
+  stock - acumulado as saldo
+from v_mov_ventas
+where
+  medicamento_id = 36;
+
+-- Caso: Crear Proveedores
+--       ruc, nombre, telefono, email    
+-- Caso: Crear OrdenCompra
+--       ordennumero, fecha, proveedor_ruc
+-- Caso: Crear OredeCompreDetalle
+--       ordennumero, medicamento_id, cantidad, costo
+
+use SaludTotal;
+create table proveedor(
+  ruc char(13) PRIMARY key,
+  nombre char(200) UNIQUE not NULL,
+  telefono varchar(20),
+  email varchar(100) unique
+);
+
+create table ordencompra(
+  numero int primary key,
+  proveedor_ruc char(13),
+  fecha date
+);
+
+alter table ordencompra
+add constraint ordencompra_proveedor_ruc_fk
+foreign key (proveedor_ruc)
+references proveedor(ruc);
+
+drop table ordencompra_detalle;
+create table ordencompra_detalle(
+  ordennumero int,
+  medicamento_id int,
+  cantidad int,
+  costo decimal(15,2)
+);
+
+alter table ordencompra_detalle
+add constraint ordencompra_detalle_ordennumero_fk
+foreign key (ordennumero)
+references ordencompra(numero);
+alter table ordencompra_detalle
+add constraint ordencompra_detalle_medicamento_id_fk
+foreign key (medicamento_id)
+references medicinas(id);
+
+alter table ordencompra_detalle
+add primary key(ordennumero,medicamento_id);
+
+select * from proveedor;
+
+select * from ordencompra;
+
+drop view v_mov_ventas;
+create view v_mov_ventas
+as
+select 
+  f.fecha,
+  fd.medicamento_id,
+  m.nombre as medicina,
+  f.facturanumero as documento,
+  'Venta' as tipo_mov,
+  m.stock,
+  fd.cantidad
+from facturadetalle fd
+join facturas f on f.facturanumero = fd.facturanumero
+join medicinas m on m.id = fd.medicamento_id 
+order BY
+  f.fecha;
+create view v_mov_compra
+as
+select 
+  oc.fecha,
+  ocd.medicamento_id,
+  m.nombre as medicina,
+  oc.numero as documento,
+  'Compra' as tipo_mov,
+  m.stock,
+  ocd.cantidad
+from ordencompra_detalle ocd
+join ordencompra oc on oc.numero = ocd.ordennumero
+join medicinas m on m.id = ocd.medicamento_id 
+order BY
+  oc.fecha;
+
+create view v_movimientos
+as
+SELECT
+ *
+from v_mov_ventas
+UNION
+SELECT
+ *
+FROM v_mov_compra
+ORDER BY fecha;
+
+select
+ fecha,
+ medicamento_id,
+  tipo_mov,
+ documento,
+ stock,
+ cantidad,
+ stock +
+ sum(
+   case tipo_mov
+   when 'Venta' then -cantidad
+   when 'Compra' then cantidad
+   end
+ ) over (partition by medicamento_id order by fecha) as saldo
+FROM
+  v_movimientos
+where medicamento_id=36;
